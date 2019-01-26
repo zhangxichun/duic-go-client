@@ -1,14 +1,14 @@
 package duic
 
 import (
-	"net/http"
-	"fmt"
-	"time"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
-	"strings"
+	"net/http"
 	"strconv"
+	"strings"
+	"time"
 )
 
 var (
@@ -16,6 +16,7 @@ var (
 	Name     string // 应用名称
 	Profiles string // 环境名称，多个使用英文逗号分隔
 	Tokens   string // 认证信息，多个使用英文逗号分隔
+	OnReload func() // 重新加载配置时，触发
 )
 
 var (
@@ -227,6 +228,9 @@ func reload() {
 	if s != state {
 		state = s
 		loadConf()
+		if OnReload != nil {
+			OnReload()
+		}
 		log.Printf("DuiC config reload successfully. newState: %s\n", s)
 	}
 }
